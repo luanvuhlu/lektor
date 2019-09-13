@@ -13,7 +13,7 @@ from lektor.utils import iter_dotted_path_prefixes, resolve_dotted_value, \
 def load_databag(filename):
     try:
         if filename.endswith('.json'):
-            with open(filename, 'r') as f:
+            with open(filename, 'r', encoding='utf-8') as f:
                 return json.load(f, object_pairs_hook=OrderedDict)
         elif filename.endswith('.ini'):
             return decode_flat_data(IniFile(filename).items(),
