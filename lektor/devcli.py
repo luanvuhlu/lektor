@@ -6,10 +6,10 @@ try:
     from IPython import embed
     from traitlets.config.loader import Config
 except ImportError:
-    pass # fallback to normal Python InteractiveConsole
+    pass  # fallback to normal Python InteractiveConsole
 
 from .packages import get_package_info, register_package, publish_package
-from .cli import pass_context, AliasedGroup
+from .cli import pass_context, AliasedGroup, extraflag
 
 
 def ensure_plugin():
@@ -36,8 +36,9 @@ def cli():
 
 
 @cli.command('shell', short_help='Starts a python shell.')
+@extraflag
 @pass_context
-def shell_cmd(ctx):
+def shell_cmd(ctx, extra_flags):
     """Starts a Python shell in the context of a Lektor project.
 
     This is particularly useful for debugging plugins and to explore the
@@ -50,7 +51,7 @@ def shell_cmd(ctx):
     - `pad`: a database pad initialized for the project and environment
       that is ready to use.
     """
-    ctx.load_plugins()
+    ctx.load_plugins(extra_flags=extra_flags)
     import code
     from lektor.db import F, Tree
     from lektor.builder import Builder
@@ -115,3 +116,21 @@ def new_plugin(ctx, **defaults):
     from .quickstart import plugin_quickstart
     project = ctx.get_project(silent=True)
     plugin_quickstart(defaults, project=project)
+
+
+@cli.command('new-theme', short_help='Creates a new theme')
+@click.option('--path', type=click.Path(), help='The destination path')
+@click.argument('theme_name', required=False)
+@pass_context
+def new_theme(ctx, **defaults):
+    """This command creates a new theme.
+
+    This will present you with a very short wizard that guides you through
+    creation of a new theme. At the end of it, it will create a theme
+    in the packages folder of the current project or the path you defined.
+
+    This is the fastest way to creating a new theme.
+    """
+    from .quickstart import theme_quickstart
+    project = ctx.get_project(silent=True)
+    theme_quickstart(defaults, project=project)

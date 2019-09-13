@@ -3,6 +3,7 @@
 /* eslint-env browser */
 
 import React from 'react'
+import createReactClass from 'create-react-class'
 import i18n from '../i18n'
 import metaformat from '../metaformat'
 import { BasicWidgetMixin } from './mixins'
@@ -131,7 +132,8 @@ const serializeFlowBlock = (flockBlockModel, data) => {
 // ever growing counter of block ids.  Good enough for what we do I think.
 let lastBlockId = 0
 
-const FlowWidget = React.createClass({
+const FlowWidget = createReactClass({
+  displayName: 'FlowWidget',
   mixins: [BasicWidgetMixin],
 
   statics: {
@@ -199,6 +201,20 @@ const FlowWidget = React.createClass({
     }
   },
 
+  collapseBlock: function (idx) {
+    this.props.value[idx].collapsed = true
+    if (this.props.onChange) {
+      this.props.onChange(this.props.value)
+    }
+  },
+
+  expandBlock: function (idx) {
+    this.props.value[idx].collapsed = false
+    if (this.props.onChange) {
+      this.props.onChange(this.props.value)
+    }
+  },
+
   renderFormField: function (blockInfo, field, idx) {
     const widgets = getWidgets()
     const value = blockInfo.data[field.name]
@@ -244,6 +260,13 @@ const FlowWidget = React.createClass({
           <div className='btn-group action-bar'>
             <button
               className='btn btn-default btn-xs'
+              title={this.props.value[idx].collapsed ? i18n.trans('Expand') : i18n.trans('Collapse')}
+              onClick={this.props.value[idx].collapsed
+                       ? this.expandBlock.bind(this, idx) : this.collapseBlock.bind(this, idx)}>
+              <i className={this.props.value[idx].collapsed ? 'fa fa-expand' : 'fa fa-compress'} />
+            </button>
+            <button
+              className='btn btn-default btn-xs'
               title={i18n.trans('UP')}
               disabled={idx === 0}
               onClick={this.moveBlock.bind(this, idx, -1)}>
@@ -264,7 +287,7 @@ const FlowWidget = React.createClass({
             </button>
           </div>
           <h4 className='block-name'>{userLabel.format(blockInfo.flowBlockModel.name_i18n)}</h4>
-          {fields}
+          {this.props.value[idx].collapsed ? null : fields}
         </div>
       )
     })

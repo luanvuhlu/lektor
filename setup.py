@@ -15,7 +15,7 @@ tests_require = [
 
 setup(
     name='Lektor',
-    version='3.1.2',
+    version='3.1.3',
     url='http://github.com/lektor/lektor/',
     description='A static content management system.',
     long_description=readme,
@@ -31,15 +31,17 @@ setup(
         'Jinja2>=2.4',
         'click>=6.0',
         'watchdog',
-        'mistune>=0.7.0',
+        'mistune>=0.7.0,<2',
         'Flask',
         'EXIFRead',
         'inifile',
+        'enum34;python_version<"3.4"',
         'Babel',
         'functools32;python_version<"3.2.3"',
         'setuptools',
         'pip',
         'requests[security]',
+        'filetype',
     ],
     tests_require=tests_require,
     extras_require={
